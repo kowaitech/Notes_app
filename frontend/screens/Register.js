@@ -80,6 +80,11 @@ const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
       <TouchableOpacity style={styles.button} onPress={register}>
         <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
+
+
+       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.link}>Already have an account? Login</Text>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -113,5 +118,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+   link: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "#4CAF50",
   },
 });
