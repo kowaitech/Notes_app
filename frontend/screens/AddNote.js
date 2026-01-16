@@ -1,29 +1,3 @@
-// import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
-// import { apiFetch } from "../api/api";
-
-// export default function AddNote({ navigation }) {
-//   const [title, setTitle] = useState("");
-//   const [content, setContent] = useState("");
-
-//   const saveNote = async () => {
-//     await apiFetch("/notes", {
-//       method: "POST",
-//       body: JSON.stringify({ title, content }),
-//     });
-//     navigation.goBack();
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TextInput style={styles.input} placeholder="Title" onChangeText={setTitle} />
-//       <TextInput style={styles.input} placeholder="Content" multiline onChangeText={setContent} />
-//       <TouchableOpacity style={styles.button} onPress={saveNote}>
-//         <Text style={styles.buttonText}>SAVE</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
 import { useState } from "react";
 import {
   View,
@@ -33,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { apiFetch } from "../api/api";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function AddNote({ navigation }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -47,6 +21,7 @@ export default function AddNote({ navigation }) {
   };
 
   return (
+    <SafeAreaView>
     <View style={styles.container}>
       <TextInput
         style={styles.input}
@@ -64,6 +39,7 @@ export default function AddNote({ navigation }) {
         <Text style={styles.buttonText}>SAVE NOTE</Text>
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 }
 

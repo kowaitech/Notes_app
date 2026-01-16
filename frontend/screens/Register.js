@@ -1,18 +1,28 @@
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+// import { useState } from "react";
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   StyleSheet,
+//   Alert,
+// } from "react-native";
 
 // export default function Register({ navigation }) {
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 
+// // const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
+
 //   const register = async () => {
-//     const res = await fetch("http://192.168.1.10:5600/register", {
+//     const res = await fetch("https://notes-app-2g6i.onrender.com/register", {
 //       method: "POST",
 //       headers: { "Content-Type": "application/json" },
 //       body: JSON.stringify({ email, password }),
 //     });
 
 //     if (res.ok) {
-//       Alert.alert("Success", "Registered successfully");
+//       Alert.alert("Success", "Account created");
 //       navigation.navigate("Login");
 //     } else {
 //       Alert.alert("Error", "Registration failed");
@@ -21,12 +31,28 @@
 
 //   return (
 //     <View style={styles.container}>
-//       <Text style={styles.title}>Register</Text>
-//       <TextInput style={styles.input} placeholder="Email" onChangeText={setEmail} />
-//       <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setPassword} />
+//       <Text style={styles.title}>Create Account</Text>
+
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Email"
+//         onChangeText={setEmail}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Password"
+//         secureTextEntry
+//         onChangeText={setPassword}
+//       />
+
 //       <TouchableOpacity style={styles.button} onPress={register}>
 //         <Text style={styles.buttonText}>REGISTER</Text>
 //       </TouchableOpacity>
+
+
+//        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+//             <Text style={styles.link}>Already have an account? Login</Text>
+//         </TouchableOpacity>
 //     </View>
 //   );
 // }
@@ -39,25 +65,72 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from "react-native";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
+
+  // ✅ Unified alert for mobile + web
+  const showAlert = (title, message) => {
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  // ✅ Email validation
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // ✅ Password validation
+  const isValidPassword = (password) => {
+    // at least 6 chars, one letter, one number
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    return passwordRegex.test(password);
+  };
 
   const register = async () => {
-    const res = await fetch("https://notes-app-2g6i.onrender.com/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    if (!email || !password) {
+      showAlert("Validation Error", "All fields are required");
+      return;
+    }
 
-    if (res.ok) {
-      Alert.alert("Success", "Account created");
-      navigation.navigate("Login");
-    } else {
-      Alert.alert("Error", "Registration failed");
+    if (!isValidEmail(email)) {
+      showAlert("Validation Error", "Enter a valid email address");
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      showAlert(
+        "Validation Error",
+        "Password must be at least 6 characters and contain at least one letter and one number"
+      );
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "https://notes-app-2g6i.onrender.com/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      if (res.ok) {
+        showAlert("Success", "Account created");
+        navigation.navigate("Login");
+      } else {
+        showAlert("Error", "Registration failed");
+      }
+    } catch (error) {
+      showAlert("Error", "Something went wrong");
     }
   };
 
@@ -68,8 +141,11 @@ const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
       <TextInput
         style={styles.input}
         placeholder="Email"
+        keyboardType="email-address"
+        autoCapitalize="none"
         onChangeText={setEmail}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -81,10 +157,9 @@ const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
         <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
 
-
-       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.link}>Already have an account? Login</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.link}>Already have an account? Login</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -125,3 +200,4 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
   },
 });
+

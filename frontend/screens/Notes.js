@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { apiFetch } from "../api/api";
 import { clearTokens } from "../auth/authStorage";
 import { Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Notes({ navigation }) {
   const [notes, setNotes] = useState([]);
@@ -83,6 +84,9 @@ const performDelete = async (id) => {
   };
 
   return (
+       
+    <SafeAreaView style={{ flex: 1 }}>
+
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
@@ -131,6 +135,8 @@ const performDelete = async (id) => {
         <Text style={styles.addText}>＋</Text>
       </TouchableOpacity>
     </View>
+
+    </SafeAreaView>
   );
 }
 

@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { apiFetch } from "../api/api";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function EditNote({ route, navigation }) {
   const { note } = route.params;
 
@@ -24,6 +24,8 @@ export default function EditNote({ route, navigation }) {
   };
 
   return (
+    <SafeAreaView>
+
     <View style={styles.container}>
       <TextInput
         style={styles.input}
@@ -42,6 +44,8 @@ export default function EditNote({ route, navigation }) {
         <Text style={styles.buttonText}>UPDATE NOTE</Text>
       </TouchableOpacity>
     </View>
+        </SafeAreaView>
+
   );
 }
 

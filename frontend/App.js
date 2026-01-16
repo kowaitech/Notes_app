@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Notes from "./screens/Notes";
@@ -34,6 +34,8 @@ export default function App() {
   }
 
   return (
+      <SafeAreaProvider>
+
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName={initialRoute}
@@ -46,5 +48,7 @@ export default function App() {
         <Stack.Screen name="EditNote" component={EditNote} />
       </Stack.Navigator>
     </NavigationContainer>
+      </SafeAreaProvider>
+
   );
 }
