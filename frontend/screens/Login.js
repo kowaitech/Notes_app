@@ -52,7 +52,8 @@ export default function Login({ navigation }) {
   const login = async () => {
     const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
 
-    const res = await fetch("http://192.168.0.105:5600/login", {
+    // const res = await fetch("http://192.168.0.105:5600/login", {
+    const res = await fetch("https://notes-app-2g6i.onrender.com/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

@@ -47,7 +47,7 @@ export default function Register({ navigation }) {
 const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
 
   const register = async () => {
-    const res = await fetch("http://192.168.0.105:5600/register", {
+    const res = await fetch("https://notes-app-2g6i.onrender.com/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
