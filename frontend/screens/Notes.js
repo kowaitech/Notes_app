@@ -15,7 +15,7 @@ import { Platform } from "react-native";
 export default function Notes({ navigation }) {
   const [notes, setNotes] = useState([]);
 
-  // ✅ Auto refresh when screen is focused
+  //  Auto refresh when screen is focused
   useFocusEffect(
     useCallback(() => {
       loadNotes();
@@ -34,7 +34,7 @@ export default function Notes({ navigation }) {
 
 
 const deleteNote = async (id) => {
-  // ✅ WEB CONFIRM
+  //  WEB CONFIRM
   if (Platform.OS === "web") {
     const confirmed = window.confirm("Are you sure you want to delete this note?");
     if (!confirmed) return;
@@ -43,7 +43,7 @@ const deleteNote = async (id) => {
     return;
   }
 
-  // ✅ MOBILE CONFIRM
+  // MOBILE CONFIRM
   Alert.alert("Delete Note", "Are you sure you want to delete this note?", [
     { text: "Cancel" },
     {
@@ -67,7 +67,7 @@ const performDelete = async (id) => {
       return;
     }
 
-    // ✅ INSTANT UI UPDATE
+    //  INSTANT UI UPDATE
     setNotes((prev) => prev.filter((note) => note._id !== id));
   } catch (error) {
     console.error(error);

@@ -1,6 +1,7 @@
 import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from "../auth/authStorage";
 
 const BASE_URL = "http://192.168.0.105:5600"; 
+// const BASE_URL ="https://notes-app-2g6i.onrender.com"
 // const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL}`;
 
 export async function apiFetch(url, options = {}) {
