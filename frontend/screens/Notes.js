@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import {
   View,
@@ -6,13 +7,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { apiFetch } from "../api/api";
 import { clearTokens } from "../auth/authStorage";
-import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+// import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from '@expo/vector-icons';
+import theme from "../styles/theme";
+import VideoScreen from "./Videoback";
 export default function Notes({ navigation }) {
   const [notes, setNotes] = useState([]);
 
@@ -84,122 +88,126 @@ const performDelete = async (id) => {
   };
 
   return (
-       
-    <SafeAreaView style={{ flex: 1 }}>
-
-    <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Notes</Text>
-        <TouchableOpacity onPress={logout}>
-          <Text style={styles.logout}>Logout</Text>
+    <VideoScreen>
+   <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>My Notes</Text>
+          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+            <MaterialIcons name="logout" size={22} color={theme.colors.error} />
+          </TouchableOpacity>
+        </View>
+        {/* NOTES LIST */}
+        <FlatList
+          data={notes}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          renderItem={({ item }) => (
+            <View style={styles.noteCard}>
+              {/* Card Header */}
+              <View style={styles.cardHeader}>
+                <Text style={styles.noteTitle}>{item.title}</Text>
+                <View style={styles.cardActions}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("EditNote", { note: item })}
+                  >
+                    <MaterialIcons name="edit" size={20} color={theme.colors.primary} style={styles.actionIcon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => deleteNote(item._id)}>
+                    <MaterialIcons name="delete" size={20} color={theme.colors.error} style={styles.actionIcon} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <Text style={styles.noteContent}>{item.content}</Text>
+            </View>
+          )}
+        />
+        {/* FLOATING ADD BUTTON */}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate("AddNote")}
+        >
+          <MaterialIcons name="add" size={32} color="#fff" />
         </TouchableOpacity>
       </View>
-
-      {/* NOTES LIST */}
-      <FlatList
-        data={notes}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        renderItem={({ item }) => (
-          <View style={styles.noteCard}>
-            {/* Card Header */}
-            <View style={styles.cardHeader}>
-              <Text style={styles.noteTitle}>{item.title}</Text>
-
-              <View style={styles.cardActions}>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("EditNote", { note: item })
-                  }
-                >
-                  <Text style={styles.edit}>✏️</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => deleteNote(item._id)}>
-                  <Text style={styles.delete}>🗑</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <Text style={styles.noteContent}>{item.content}</Text>
-          </View>
-        )}
-      />
-
-      {/* FLOATING ADD BUTTON */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("AddNote")}
-      >
-        <Text style={styles.addText}>＋</Text>
-      </TouchableOpacity>
-    </View>
-
     </SafeAreaView>
+    </VideoScreen>
+ 
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F2F2F2",
-    padding: 16,
+    backgroundColor: '#fff',
+    padding: theme.spacing.lg,
+    minHeight: '100vh',
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: theme.spacing.md,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: theme.fontSizes.xlarge,
+    fontFamily: theme.fonts.bold,
+    color: theme.colors.text,
+    letterSpacing: 1,
   },
-  logout: {
-    color: "#E53935",
-    fontWeight: "bold",
+  logoutBtn: {
+    padding: theme.spacing.sm,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.7)',
   },
-
   noteCard: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
+    backgroundColor: theme.colors.card,
+    padding: theme.spacing.md,
+    borderRadius: 16,
+    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 2px 8px rgba(34,43,69,0.08)',
+      },
+      default: {
+        shadowColor: theme.colors.text,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 2,
+      },
+    }),
   },
-
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: theme.spacing.xs,
   },
-
   noteTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: theme.fontSizes.large,
+    fontFamily: theme.fonts.semiBold,
+    color: theme.colors.text,
     flex: 1,
   },
-
   cardActions: {
     flexDirection: "row",
     gap: 12,
   },
-
-  edit: {
-    fontSize: 18,
+  actionIcon: {
+    marginLeft: theme.spacing.sm,
   },
-
-  delete: {
-    fontSize: 18,
-  },
-
   noteContent: {
-    marginTop: 8,
-    color: "#555",
+    marginTop: theme.spacing.xs,
+    color: theme.colors.muted,
+    fontFamily: theme.fonts.regular,
+    fontSize: theme.fontSizes.medium,
   },
-
   addButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: '#4F8EF7',
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -208,10 +216,17 @@ const styles = StyleSheet.create({
     right: 20,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
-  },
-  addText: {
-    fontSize: 30,
-    color: "#fff",
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 16px rgba(79,142,247,0.12)',
+      },
+      default: {
+        shadowColor: '#4F8EF7',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+        elevation: 3,
+      },
+    }),
   },
 });

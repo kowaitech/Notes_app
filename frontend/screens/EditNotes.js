@@ -5,74 +5,225 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Platform,
+  Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import { apiFetch } from "../api/api";
 import { SafeAreaView } from "react-native-safe-area-context";
-export default function EditNote({ route, navigation }) {
+import { MaterialIcons } from "@expo/vector-icons";
+import theme from "../styles/theme";
+import VideoScreen from "./Videoback";
+
+export default function EditNotes({ navigation, route }) {
   const { note } = route.params;
 
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
+  const [titleFocus, setTitleFocus] = useState(false);
+  const [contentFocus, setContentFocus] = useState(false);
+
+  const showAlert = (title, message) => {
+    Platform.OS === "web"
+      ? window.alert(`${title}\n\n${message}`)
+      : Alert.alert(title, message);
+  };
 
   const updateNote = async () => {
-    await apiFetch(`/notes/${note._id}`, {
-      method: "PUT",
-      body: JSON.stringify({ title, content }),
-    });
+    if (!title.trim() || !content.trim()) {
+      showAlert("Validation Error", "Both title and content are required.");
+      return;
+    }
 
-    navigation.goBack();
+    try {
+      await apiFetch(`/notes/${note._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ title, content }),
+      });
+
+      navigation.goBack();
+    } catch {
+      showAlert("Error", "Failed to update note");
+    }
   };
 
   return (
-    <SafeAreaView>
+    <VideoScreen>
+      <SafeAreaView style={{ flex: 1, width: "100%" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        >
+          <View style={styles.centerWrapper}>
+            <View style={styles.card}>
+              {/* 🔙 Back Button */}
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+              >
+                <MaterialIcons
+                  name="arrow-back"
+                  size={22}
+                  color={theme.colors.text}
+                />
+                <Text style={styles.backText}>Back</Text>
+              </TouchableOpacity>
 
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-      />
+              {/* Title */}
+              <View
+                style={[
+                  styles.inputWrapper,
+                  titleFocus && styles.inputWrapperFocused,
+                ]}
+              >
+                <MaterialIcons
+                  name="title"
+                  size={22}
+                  color={theme.colors.muted}
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={styles.input}
+                  value={title}
+                  placeholder="Title"
+                  placeholderTextColor={theme.colors.muted}
+                  onChangeText={setTitle}
+                  onFocus={() => setTitleFocus(true)}
+                  onBlur={() => setTitleFocus(false)}
+                />
+              </View>
 
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        value={content}
-        multiline
-        onChangeText={setContent}
-      />
+              {/* Content */}
+              <View
+                style={[
+                  styles.inputWrapper,
+                  contentFocus && styles.inputWrapperFocused,
+                ]}
+              >
+                <MaterialIcons
+                  name="notes"
+                  size={22}
+                  color={theme.colors.muted}
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  value={content}
+                  placeholder="Write your note..."
+                  placeholderTextColor={theme.colors.muted}
+                  multiline
+                  onChangeText={setContent}
+                  onFocus={() => setContentFocus(true)}
+                  onBlur={() => setContentFocus(false)}
+                />
+              </View>
 
-      <TouchableOpacity style={styles.button} onPress={updateNote}>
-        <Text style={styles.buttonText}>UPDATE NOTE</Text>
-      </TouchableOpacity>
-    </View>
-        </SafeAreaView>
-
+              {/* Update Button */}
+              <TouchableOpacity style={styles.button} onPress={updateNote}>
+                <Text style={styles.buttonText}>UPDATE NOTE</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </VideoScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  centerWrapper: {
     flex: 1,
-    backgroundColor: "#F2F2F2",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
-  input: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 15,
+
+  card: {
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderRadius: 20,
+    padding: theme.spacing.lg,
+    maxWidth: 420,
+    width: "100%",
+
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0 8px 32px rgba(34,43,69,0.18)" }
+      : {
+          shadowColor: theme.colors.text,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.18,
+          shadowRadius: 32,
+          elevation: 8,
+        }),
   },
+
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: theme.spacing.md,
+  },
+
+  backText: {
+    marginLeft: 6,
+    fontFamily: theme.fonts.regular,
+    fontSize: theme.fontSizes.medium,
+    color: theme.colors.text,
+  },
+
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 14,
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    backgroundColor: "#fff",
+  },
+
+  inputWrapperFocused: {
+    borderColor: theme.colors.primary,
+    ...(Platform.OS === "web"
+      ? { boxShadow: "0 0 0 2px #4F8EF7" }
+      : {
+          shadowColor: theme.colors.primary,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 10,
+          elevation: 4,
+        }),
+  },
+
+  icon: {
+    marginRight: theme.spacing.sm,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: theme.fontSizes.medium,
+    fontFamily: theme.fonts.regular,
+    color: theme.colors.text,
+    paddingVertical: theme.spacing.md,
+    backgroundColor: "transparent",
+  },
+
   textArea: {
-    height: 150,
+    height: 120,
     textAlignVertical: "top",
   },
+
   button: {
-    backgroundColor: "#4CAF50",
-    padding: 16,
+    backgroundColor: "#4F8EF7",
+    padding: theme.spacing.lg,
     borderRadius: 30,
     alignItems: "center",
+    marginTop: theme.spacing.md,
   },
+
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontFamily: theme.fonts.semiBold,
+    fontSize: theme.fontSizes.large,
+    letterSpacing: 1,
   },
 });
